@@ -75,7 +75,28 @@ Apps like **Nuvio** are where this setup stops feeling like tech support and sta
 - **"Add this movie to my watchlist."** The real superpower. You're at lunch, someone recommends a film, you tell Muse in chat — and by the time you're home, it's sitting in your Nuvio watchlist on the big screen, waiting. Your watchlist becomes something you *curate by conversation*, from anywhere, all day.
 - **Movie-night stagehand.** Brightness down to your evening level, volume set to the number you like, the right app in front — the whole pre-show ritual, done before you've found the snacks.
 
-One honest note on how it works: there's no secret Nuvio API — Muse drives the app the way you would, with remote key-presses and screenshots for eyes, just faster and without the "where is that menu again" tax. Menus occasionally rearrange themselves between app updates; Muse adapts by looking before pressing.
+One honest note on how it works: there's no secret Nuvio API — Muse drives the app the way you would, with remote key-presses and screenshots for eyes, just faster and without the "where is that menu again" tax. Menus occasionally rearrange themselves between app updates; Muse adapts by looking before pressing. — and then we found the fast lane, which gets its own section next.
+
+## The fast lane: deep links into Nuvio
+
+Driving an app with remote key-presses works, but it is the scenic route: open the app, walk to Search, type the title letter by letter, dismiss the keyboard, pick the result. It adds up to minutes, and the human at home can *feel* it adding up.
+
+Then we checked what doors Nuvio itself registers with Android — and found one. Nuvio answers to its own link scheme, including title links:
+
+```bash
+adb shell am start -a android.intent.action.VIEW -d nuvio://detail/movie/tt1285016
+```
+
+That `tt1285016` is an IMDb ID (this one is *The Social Network*), and that single command lands the TV **directly on the movie's page** — no menus, no typing, no result-hunting. From there Muse picks a stream and presses play.
+
+**Receipts:** live-tested on the Sony. The request "Play The Social Network on Nuvio" went from chat message to the movie actually playing in **about 72 seconds** — and most of that was Nuvio loading its own stream list, not navigation.
+
+Field notes, honestly earned:
+
+- **The stream list leads with giants.** The first entries are 4K remuxes of 35–100 GB. On this TV the sweet spot was an ~11 GB 4K Web-DL: the stock player can bounce off the biggest remux containers (the app's own "Switch to MPV Player" rescue prompt exists for a reason).
+- **One asterisk:** the series form (`nuvio://detail/series/<id>`) follows the same shape but has **not been live-tested yet** — only the movie form is proven so far. The `stremio://` scheme also opens the app, but only to its home screen.
+
+The lesson generalises: before remote-driving any app's interface, check its manifest for link schemes. The fastest interface is the one that skips the interface.
 
 ## Debloat: evict the freeloaders
 
